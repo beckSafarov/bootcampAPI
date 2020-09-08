@@ -6,7 +6,7 @@ const express = require('express'),
     createBootcamp,
     updateBootcamp,
     deleteBootcamp,
-  } = require('../controllers/bootcamps');
+  } = require('../controllers/btcController');
 
 router.route('/').get(getBootcamps).post(createBootcamp);
 

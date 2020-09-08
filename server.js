@@ -5,10 +5,13 @@ const express = require('express'),
   colors = require('colors'),
   PORT = process.env.PORT || 5000;
 
+//Body parser
+app.use(express.json());
+
 //load env vars
 dotenv.config({ path: './config/config.env' });
 
-const bootcamps = require('./routes/bootcamps'),
+const bootcamps = require('./routes/btcRoutes'),
   connectDB = require('./config/db');
 
 connectDB();
@@ -31,7 +34,7 @@ const server = app.listen(
 
 //handle unhandled rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`.red);
+  console.log('unhandledRejection', err.message);
   //close server & exit process
-  server.close(process.exit(1));
+  server.close();
 });

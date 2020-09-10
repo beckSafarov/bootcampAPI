@@ -12,20 +12,20 @@ app.use(express.json());
 //load env vars
 dotenv.config({ path: './config/config.env' });
 
-const bootcamps = require('./routes/btcRoutes'),
-  connectDB = require('./config/db');
+const bootcamps = require('./routes/btcRoutes'), //bringing btcRoutes file with routes
+  connectDB = require('./config/db'); //connecting to the database
 
-connectDB();
+connectDB(); //activating database
 
 //dev logging middleware
 if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
 
-//routs to bootcamps
+//activating routes to bootcamps
 app.use('/api/v1/bootcamps', bootcamps);
 
-app.use(errorHandler);
+app.use(errorHandler); //in case if there happens error in app.use, next() is called there and it calls the error handler function
 
 const server = app.listen(
   PORT,

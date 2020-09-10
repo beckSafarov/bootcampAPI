@@ -3,8 +3,8 @@ const express = require('express'),
   app = express(),
   morgan = require('morgan'),
   colors = require('colors'),
-  errorHandler = require('./middleware/error');
-PORT = process.env.PORT || 5000;
+  errorHandler = require('./middleware/error'),
+  PORT = process.env.PORT || 5000;
 
 //Body parser
 app.use(express.json());

@@ -41,3 +41,17 @@ process.on('unhandledRejection', (err, promise) => {
   //close server & exit process
   server.close();
 });
+
+//handling crashes
+process.on('uncaughtException', (err, promise) => {
+  console.log('uncaughtException', err.message);
+  //close server & exit process
+  server.close();
+});
+
+//killing server
+process.on('SIGTERM', (err, promise) => {
+  console.log('SIGTERM', err.message);
+  //close server & exit process
+  server.close();
+});

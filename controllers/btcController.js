@@ -1,6 +1,6 @@
-const geocoder = require('../utils/geocoder'),
+const asyncHandler = require('../middleware/async'),
+  geocoder = require('../utils/geocoder'),
   Bootcamp = require('../models/btcModel'),
-  asyncHandler = require('../middleware/async'),
   ErrorResponse = require('../utils/errorResponse');
 
 //@desc      Get all bootcamps
@@ -76,7 +76,7 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   //get latitude/longtitude from geocoder
   const loc = await geocoder.geocode(zipcode),
     lat = loc[0].latitude,
-    lng = loc[0].longtitude;
+    lng = loc[0].longitude;
 
   //calc radius using radians
   //divide distance by radius of Earth
@@ -84,7 +84,8 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   const bootcamps = await Bootcamp.find({
     location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
   });
-
+  console.log(bootcamps);
+  console.log('Hallooo');
   res.status(200).json({
     success: true,
     count: bootcamps.length,

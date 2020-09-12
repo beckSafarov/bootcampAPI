@@ -4,6 +4,7 @@ const errorHandler = (err, req, res, next) => {
   //log to console for dev
   console.log('ERROR: ' + err.name);
   console.log('MESSAGE:' + err.message);
+  console.log(err.stack);
   let message = err.message;
   //cast error check. Wrong id
   if (err.name == 'CastError') {

@@ -6,7 +6,10 @@ const express = require('express'),
     createBootcamp,
     updateBootcamp,
     deleteBootcamp,
+    getBootcampsInRadius,
   } = require('../controllers/btcController');
+
+router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius);
 
 router.route('/').get(getBootcamps).post(createBootcamp);
 

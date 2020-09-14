@@ -85,7 +85,7 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
     location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
   });
   console.log(bootcamps);
-  console.log('Hallooo');
+  console.log(`latitude: ${lat}\nlongitude: ${lng}\nradians: ${radius}`);
   res.status(200).json({
     success: true,
     count: bootcamps.length,

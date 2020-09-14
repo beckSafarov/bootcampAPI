@@ -7,7 +7,44 @@ const asyncHandler = require('../middleware/async'),
 //@route     GET/api/v1/bootcamps
 //@access    Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-  const bootcamps = await Bootcamp.find();
+  let query,
+    //copy req.query
+    reqQuery = { ...req.query };
+
+  //fields to execute
+  const removeFields = ['select', 'sort'];
+
+  //loop over removeFields
+  removeFields.forEach((param) => delete reqQuery[param]);
+
+  let queryStr = JSON.stringify(reqQuery);
+
+  //find comparison operators
+  queryStr = queryStr.replace(
+    /\b(gt|gte|lt|lte)|in\b/g,
+    (match) => `$${match}`
+  );
+
+  //finding the resource
+  query = Bootcamp.find(JSON.parse(queryStr));
+
+  //Selecting certain fields
+  if (req.query.select) {
+    const fields = req.query.select.split(',').join(' ');
+    query = query.select(fields);
+  }
+
+  //Sorting
+  if (req.query.sort) {
+    // const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(req.query.sort);
+  } else {
+    query = query.sort('-createdAt');
+  }
+
+  //receiving the query
+  const bootcamps = await query;
+
   res
     .status(200)
     .json({ success: true, count: bootcamps.length, data: bootcamps });
@@ -75,6 +112,7 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   const { zipcode, distance } = req.params;
   //get latitude/longtitude from geocoder
   const loc = await geocoder.geocode(zipcode),
+    //NodeGeocoder(options).geocode(zipcode)
     lat = loc[0].latitude,
     lng = loc[0].longitude;
 

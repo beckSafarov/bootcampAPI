@@ -7,7 +7,10 @@ const express = require('express'),
     updateBootcamp,
     deleteBootcamp,
     getBootcampsInRadius,
-  } = require('../controllers/btcController');
+  } = require('../controllers/btcController'),
+  courseRouter = require('./crsRoutes');
+
+router.use('/:bootcampId/courses', courseRouter);
 
 router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius);
 

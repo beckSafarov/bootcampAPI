@@ -12,7 +12,9 @@ app.use(express.json());
 //load env vars
 dotenv.config({ path: './config/config.env' });
 
-const bootcamps = require('./routes/btcRoutes'), //bringing btcRoutes file with routes
+//bringing route files and others
+const bootcamps = require('./routes/btcRoutes'),
+  courses = require('./routes/crsRoutes'),
   connectDB = require('./config/db'); //connecting to the database
 
 connectDB(); //activating database
@@ -22,8 +24,9 @@ if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
 
-//activating routes to bootcamps
+//activating || mounting routes to bootcamps
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 app.use(errorHandler); //in case if there happens error in app.use, next() is called there and it calls the error handler function
 

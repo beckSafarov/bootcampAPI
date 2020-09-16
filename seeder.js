@@ -44,7 +44,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await btcModel.deleteMany();
-    await crsModel.deteleMany();
+    await crsModel.deleteMany();
     console.log('Data Destroyed...'.red.inverse);
     process.exit();
   } catch (err) {

@@ -27,7 +27,10 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   //search for the queryStr, or required resource
-  query = Bootcamp.find(JSON.parse(queryStr));
+  query = Bootcamp.find(JSON.parse(queryStr)).populate({
+    path: 'courses',
+    select: 'title description',
+  });
 
   //Function for selecting certain fields
   if (req.query.select) {
@@ -127,14 +130,14 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 //@route     DELETE/api/v1/bootcamps/:id
 //@access    Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+  const bootcamp = await Bootcamp.findById(req.params.id);
 
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
-
+  bootcamp.remove();
   res.status(200).json({ success: true, msg: `Item successfully deleted` });
 });
 
@@ -145,7 +148,6 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   const { zipcode, distance } = req.params;
   //get latitude/longtitude from geocoder
   const loc = await geocoder.geocode(zipcode),
-    //NodeGeocoder(options).geocode(zipcode)
     lat = loc[0].latitude,
     lng = loc[0].longitude;
 

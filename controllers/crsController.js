@@ -9,15 +9,23 @@ const asyncHandler = require('../middleware/async'),
 exports.getCourses = asyncHandler(async (req, res, next) => {
   let query;
   if (req.params.bootcampId) {
-    query = Course.find({ bootcamp: req.params.bootcampId });
+    query = await Course.find({ bootcamp: req.params.bootcampId });
   } else {
-    query = Course.find();
+    query = await Course.find().populate({
+      path: 'bootcamp',
+      select: 'name description',
+    });
   }
 
-  const courses = await query;
+  if (!query) {
+    return next(
+      new ErrorResponse(`Courses not found with id of ${req.params.id}`, 404)
+    );
+  }
+
   res.status(200).json({
     success: true,
-    count: courses.length,
-    data: courses,
+    count: query.length,
+    data: query,
   });
 });

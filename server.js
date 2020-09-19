@@ -1,8 +1,10 @@
 const express = require('express'),
+  path = require('path'),
   dotenv = require('dotenv'),
   app = express(),
   morgan = require('morgan'),
   colors = require('colors'),
+  fileupload = require('express-fileupload'),
   errorHandler = require('./middleware/error'),
   PORT = process.env.PORT || 5000;
 
@@ -23,6 +25,12 @@ connectDB(); //activating database
 if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
+
+//file upload
+app.use(fileupload());
+
+//set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //activating || mounting routes to bootcamps
 app.use('/api/v1/bootcamps', bootcamps);

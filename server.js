@@ -17,6 +17,7 @@ dotenv.config({ path: './config/config.env' });
 //bringing route files and others
 const bootcamps = require('./routes/btcRoutes'),
   courses = require('./routes/crsRoutes'),
+  auth = require('./routes/authRoutes'),
   connectDB = require('./config/db'); //connecting to the database
 
 connectDB(); //activating database
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //activating || mounting routes to bootcamps
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
 
 app.use(errorHandler); //in case if there happens error in app.use, next() is called there and it calls the error handler function
 

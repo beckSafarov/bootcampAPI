@@ -5,11 +5,15 @@ const express = require('express'),
   morgan = require('morgan'),
   colors = require('colors'),
   fileupload = require('express-fileupload'),
+  cookieParser = require('cookie-parser'),
   errorHandler = require('./middleware/error'),
   PORT = process.env.PORT || 5000;
 
 //Body parser
 app.use(express.json());
+
+//Cookie parser
+app.use(cookieParser());
 
 //load env vars
 dotenv.config({ path: './config/config.env' });

@@ -26,6 +26,11 @@ const errorHandler = (err, req, res, next) => {
     err = new ErrorResponse(message, 400);
   }
 
+  //json web token error
+  if (err.name === 'JsonWebTokenError') {
+    err = new ErrorResponse('Not authorized to access this route', 401);
+  }
+
   res.status(err.statusCode || 500).json({
     success: false,
     error: message || 'Server Error',

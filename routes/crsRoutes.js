@@ -7,6 +7,7 @@ const express = require('express'),
     updateCourse,
     deleteCourse,
   } = require('../controllers/crsController'),
+  { protect } = require('../middleware/auth'),
   Course = require('../models/crsModel'),
   advancedResults = require('../middleware/advancedResults');
 
@@ -19,8 +20,12 @@ router
     }),
     getCourses
   )
-  .post(addCourse);
+  .post(protect, addCourse);
 
-router.route('/:id').get(getCourse).put(updateCourse).delete(deleteCourse);
+router
+  .route('/:id')
+  .get(getCourse)
+  .put(protect, updateCourse)
+  .delete(protect, deleteCourse);
 
 module.exports = router;

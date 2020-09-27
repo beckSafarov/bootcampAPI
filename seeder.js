@@ -8,7 +8,8 @@ dotenv.config({ path: './config/config.env' });
 
 //load models
 const btcModel = require('./models/btcModel'),
-  crsModel = require('./models/crsModel');
+  crsModel = require('./models/crsModel'),
+  userModel = require('./models/userModel');
 
 //connect to db
 mongoose.connect(process.env.MONGO_URI, {
@@ -23,9 +24,12 @@ const bootcamps = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/btcList.json`, 'utf-8')
 );
 
-//read JSON files
 const courses = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/courses.json`, 'utf-8')
+);
+
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/users.json`, 'utf-8')
 );
 
 //Import into DB
@@ -33,6 +37,7 @@ const importData = async () => {
   try {
     await btcModel.create(bootcamps);
     await crsModel.create(courses);
+    await userModel.create(users);
     await console.log('Data Imported...'.green.inverse);
     process.exit();
   } catch (err) {
@@ -45,6 +50,7 @@ const deleteData = async () => {
   try {
     await btcModel.deleteMany();
     await crsModel.deleteMany();
+    await userModel.deleteMany();
     console.log('Data Destroyed...'.red.inverse);
     process.exit();
   } catch (err) {

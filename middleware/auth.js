@@ -29,5 +29,19 @@ exports.protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
-//jwt.verify is returning the id, iat and exp object members. They have been created in the userModel
-// when that particular json token was generated.
+//jwt.verify is returning the id, iat and exp object members. They have been created in the userModel when that particular json token was generated.
+
+//grant access to specific roles
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorResponse(
+          `${req.user.role} is not authorized to access this route`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};

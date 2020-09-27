@@ -54,15 +54,25 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 //@route     PUT/api/v1/bootcamps/:id
 //@access    Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const bootcamp = await Bootcamp.findById(req.params.id);
+  // const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+  //   new: true,
+  //   runValidators: true,
+  // });
+
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+  if (req.user.id != bootcamp.user) {
+    return next(new ErrorResponse(`Not authorized to update this course`, 404));
+  }
+  bootcamp.update(req.body, {
+    new: true,
+    runValidators: true,
+  });
+
   res.status(200).json({ success: true, data: bootcamp });
 });
 

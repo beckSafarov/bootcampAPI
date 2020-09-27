@@ -30,6 +30,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 });
 
 //jwt.verify is returning the id, iat and exp object members. They have been created in the userModel when that particular json token was generated.
+//later req.user is being assigned to the whole user model with all of its data in the database
 
 //grant access to specific roles
 exports.authorize = (...roles) => {

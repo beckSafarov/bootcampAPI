@@ -54,21 +54,20 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 //@route     PUT/api/v1/bootcamps/:id
 //@access    Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.id);
-  // const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-  //   new: true,
-  //   runValidators: true,
-  // });
+  let bootcamp = await Bootcamp.findById(req.params.id);
 
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
-  if (req.user.id != bootcamp.user) {
-    return next(new ErrorResponse(`Not authorized to update this course`, 404));
+
+  //make sure either the author or admin is updating
+  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
+    return next(new ErrorResponse(`Not authorized to update this course`, 401));
   }
-  bootcamp.update(req.body, {
+
+  bootcamp = await Bootcamp.findOneAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
@@ -87,6 +86,12 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+
+  //make sure either the author or admin is deleting
+  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
+    return next(new ErrorResponse(`Not authorized to delete this course`, 401));
+  }
+
   bootcamp.remove();
   res.status(200).json({ success: true, msg: `Item successfully deleted` });
 });
@@ -126,6 +131,11 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
+  }
+
+  //make sure either the author or admin is deleting
+  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
+    return next(new ErrorResponse(`Not authorized to update this course`, 401));
   }
 
   //if file was not sent, fire the following error

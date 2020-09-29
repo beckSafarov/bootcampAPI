@@ -2,7 +2,8 @@ const asyncHandler = require('../middleware/async'),
   path = require('path'),
   geocoder = require('../utils/geocoder'),
   Bootcamp = require('../models/btcModel'),
-  ErrorResponse = require('../utils/errorResponse');
+  ErrorResponse = require('../utils/errorResponse'),
+  validateCommit = require('../middleware/validateCommit');
 
 //@desc      Get all bootcamps
 //@route     GET/api/v1/bootcamps
@@ -21,6 +22,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+
   res.status(200).json({ success: true, data: bootcamp });
 });
 
@@ -63,9 +65,8 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   }
 
   //make sure either the author or admin is updating
-  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
-    return next(new ErrorResponse(`Not authorized to update this course`, 401));
-  }
+  const msg = `Not authorized to update this bootcamp`;
+  validateCommit(bootcamp, msg, req, res, next);
 
   bootcamp = await Bootcamp.findOneAndUpdate(req.params.id, req.body, {
     new: true,
@@ -88,9 +89,8 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   }
 
   //make sure either the author or admin is deleting
-  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
-    return next(new ErrorResponse(`Not authorized to delete this course`, 401));
-  }
+  const msg = `Not authorized to delete this bootcamp`;
+  validateCommit(bootcamp, msg, req, res, next);
 
   bootcamp.remove();
   res.status(200).json({ success: true, msg: `Item successfully deleted` });
@@ -133,10 +133,9 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
     );
   }
 
-  //make sure either the author or admin is deleting
-  if (req.user.id != bootcamp.user && req.user.role !== 'admin') {
-    return next(new ErrorResponse(`Not authorized to update this course`, 401));
-  }
+  //make sure either the author or admin is uploading
+  const message = `Not authorized to update this course`;
+  validateCommit(bootcamp, message, req, res, next);
 
   //if file was not sent, fire the following error
   if (!req.files) {

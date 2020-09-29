@@ -1,7 +1,8 @@
 const asyncHandler = require('../middleware/async'),
   Course = require('../models/crsModel'),
   ErrorResponse = require('../utils/errorResponse'),
-  Bootcamp = require('../models/btcModel');
+  Bootcamp = require('../models/btcModel'),
+  validateCommit = require('../middleware/validateCommit');
 
 //@desc      Get courses
 //@route     GET/api/v1/courses
@@ -48,6 +49,7 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 //@access    Private
 exports.addCourse = asyncHandler(async (req, res, next) => {
   req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id; //add user to req.body
 
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
@@ -57,6 +59,10 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
       404
     );
   }
+
+  //make sure either the author or admin is adding course
+  const msg = `Not authorized to add course`;
+  validateCommit(bootcamp, msg, req, res, next);
 
   const course = await Course.create(req.body);
 
@@ -81,6 +87,10 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
     );
   }
 
+  //make sure either the author or admin is updating course
+  const msg = `Not authorized to update this course`;
+  validateCommit(course, msg, req, res, next);
+
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -103,6 +113,10 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`No course found with id of ${req.params.id}`, 404)
     );
   }
+
+  const msg = `Not authorized to delete this bootcamp`;
+  validateCommit(course, msg, req, res, next);
+
   course.remove();
   res.status(200).json({ success: true, msg: `Course successfully deleted` });
 });

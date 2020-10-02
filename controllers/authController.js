@@ -2,6 +2,7 @@ const asyncHandler = require('../middleware/async'),
   Bootcamp = require('../models/btcModel'),
   User = require('../models/userModel'),
   ErrorResponse = require('../utils/errorResponse'),
+  crypto = require('crypto'),
   sendEmail = require('../utils/sendEmail');
 
 //@desc      Register User
@@ -67,11 +68,13 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   }
 
   //get reset token
-  user.getResetPasswordToken();
+  const token = user.getResetPasswordToken();
   await user.save({ validateBeforeSave: false });
 
   //create reset url
-  const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/resetpassword`;
+  const resetUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/auth/resetpassword/${token}`;
   const message = `You are receiving this email because you seem like a good peron. Put request here: ${resetUrl}`;
   try {
     await sendEmail({
@@ -89,6 +92,31 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
       new ErrorResponse('Email could not be sent. Please contact help', 500)
     );
   }
+});
+
+//@desc      reset password
+//@route     PUT/api/v1/auth/resetpassword/:resettoken
+//@access    Public
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  //get hashed token
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resettoken)
+    .digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorResponse('Invalid token', 400));
+  }
+  //set the new password
+  user.password = req.body.password;
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
 });
 
 //get token from model, create cookie and send response

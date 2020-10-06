@@ -23,6 +23,7 @@ const bootcamps = require('./routes/btcRoutes'),
   courses = require('./routes/crsRoutes'),
   auth = require('./routes/authRoutes'),
   users = require('./routes/userRoutes'),
+  reviews = require('./routes/revRoutes'),
   connectDB = require('./config/db'); //connecting to the database
 
 connectDB(); //activating database
@@ -43,6 +44,7 @@ app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
+app.use('/api/v1/reviews', reviews);
 
 app.use(errorHandler); //in case if there happens error in app.use, next() is called there and it calls the error handler function
 

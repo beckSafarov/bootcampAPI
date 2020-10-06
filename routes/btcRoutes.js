@@ -12,9 +12,11 @@ const express = require('express'),
   Bootcamp = require('../models/btcModel'),
   advancedResults = require('../middleware/advancedResults'),
   { protect, authorize } = require('../middleware/auth'),
+  reviews = require('./revRoutes'),
   courseRouter = require('./crsRoutes');
 
 router.use('/:bootcampId/courses', courseRouter);
+router.use('/:bootcampId/reviews', reviews);
 
 router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius);
 

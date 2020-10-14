@@ -7,6 +7,7 @@ const express = require('express'),
   fileupload = require('express-fileupload'),
   cookieParser = require('cookie-parser'),
   errorHandler = require('./middleware/error'),
+  mongoSanitize = require('express-mongo-sanitize'),
   PORT = process.env.PORT || 5000;
 
 //Body parser
@@ -35,6 +36,9 @@ if (process.env.NODE_ENV == 'development') {
 
 //file upload
 app.use(fileupload());
+
+//sanitize data
+app.use(mongoSanitize());
 
 //set static folder
 app.use(express.static(path.join(__dirname, 'public')));

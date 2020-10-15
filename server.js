@@ -6,6 +6,11 @@ const express = require('express'),
   colors = require('colors'),
   fileupload = require('express-fileupload'),
   cookieParser = require('cookie-parser'),
+  helmet = require('helmet'),
+  xss = require('xss-clean'),
+  rateLimit = require('express-rate-limit'),
+  hpp = require('hpp'),
+  cors = require('cors'),
   errorHandler = require('./middleware/error'),
   mongoSanitize = require('express-mongo-sanitize'),
   PORT = process.env.PORT || 5000;
@@ -39,6 +44,26 @@ app.use(fileupload());
 
 //sanitize data
 app.use(mongoSanitize());
+
+//set security headers
+app.use(helmet());
+
+// prevent xss attacks
+app.use(xss());
+
+//rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, //10 mins
+  max: 100,
+});
+
+app.use(limiter);
+
+//prevent http param pollution
+app.use(hpp());
+
+//enable CORS
+app.use(cors());
 
 //set static folder
 app.use(express.static(path.join(__dirname, 'public')));
